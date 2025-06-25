@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from src.models.user import User, UserRole, db
 from src.models.rider import Rider, RiderStatus
+from src.models.booking import BookingStatus
 from src.routes.auth import verify_token
 from datetime import datetime
 
@@ -207,7 +208,7 @@ def delete_rider(rider_id):
             return jsonify({'error': 'Access denied'}), 403
         
         # Check if rider has active bookings
-        active_bookings = [booking for booking in rider.bookings if booking.status in ['pending', 'confirmed']]
+        active_bookings = [booking for booking in rider.bookings if booking.status in [BookingStatus.PENDING, BookingStatus.CONFIRMED]]
         if active_bookings:
             return jsonify({'error': 'Cannot delete rider with active bookings'}), 400
         

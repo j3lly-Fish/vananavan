@@ -27,7 +27,7 @@ import {
   MessageSquare
 } from 'lucide-react';
 import LoadingSpinner from '../ui/LoadingSpinner';
-import { toast } from "sonner";
+import { useToast } from '@/components/ui/use-toast';
 
 const BookingManagement = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);

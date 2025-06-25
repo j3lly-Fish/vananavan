@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from src.models.user import User, UserRole, db
 from src.models.message import Message, MessageType, MessageStatus
-from src.models.booking import Booking
+from src.models.booking import Booking, BookingStatus
 from src.models.driver import Driver
 from src.routes.auth import verify_token
 
@@ -226,7 +226,7 @@ def send_broadcast_message():
         # Get all riders for this route
         recipients = []
         for booking in route.bookings:
-            if booking.status in ['pending', 'confirmed'] and booking.rider.parent_user:
+            if booking.status in [BookingStatus.PENDING, BookingStatus.CONFIRMED] and booking.rider.parent_user:
                 recipients.append(booking.rider.parent_user)
         
         if not recipients:

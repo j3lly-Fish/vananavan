@@ -26,16 +26,21 @@ This guide will help you run the Miami School Bus Service application locally us
    │       └── static/ (contains built frontend files)
    ```
 
-2. **Start the application**
+2. **Configure the API URL (optional)**
+   - The frontend reads the backend address from `VITE_API_URL` when it is built.
+   - Edit `bus-frontend/.env` or export `VITE_API_URL` to point to your backend.
+   - If unset, the frontend defaults to `/api` on the same host.
+
+3. **Start the application**
    ```bash
    docker-compose up --build
    ```
 
-3. **Access the application**
+4. **Access the application**
    - Open your browser and go to: http://localhost:5000
    - The application will be available on port 5000
 
-4. **Stop the application**
+5. **Stop the application**
    ```bash
    docker-compose down
    ```

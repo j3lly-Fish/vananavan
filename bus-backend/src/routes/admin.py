@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from src.models.user import User, UserRole, UserStatus, db
 from src.models.driver import Driver
 from src.models.rider import Rider
-from src.models.booking import Booking
+from src.models.booking import Booking, BookingStatus
 from src.models.route import Route
 from src.models.subscription import Subscription
 from src.models.payment import Payment
@@ -56,7 +56,7 @@ def get_dashboard_stats():
         # Booking statistics
         total_bookings = Booking.query.count()
         active_bookings = Booking.query.filter(
-            Booking.status.in_(['pending', 'confirmed'])
+            Booking.status.in_([BookingStatus.PENDING, BookingStatus.CONFIRMED])
         ).count()
         completed_bookings = Booking.query.filter_by(status='completed').count()
         

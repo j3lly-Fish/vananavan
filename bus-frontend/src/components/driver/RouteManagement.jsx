@@ -30,7 +30,7 @@ import {
   MoreHorizontal
 } from 'lucide-react';
 import LoadingSpinner from '../ui/LoadingSpinner';
-import { toast } from "sonner";
+import { useToast } from '@/components/ui/use-toast';
 
 const RouteManagement = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);

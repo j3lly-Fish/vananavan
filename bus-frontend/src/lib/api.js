@@ -1,8 +1,12 @@
 import axios from 'axios';
 
+// Determine the base URL for the backend API.
+// `VITE_API_URL` can be set at build time and defaults to `/api` on the current host.
+const baseURL = import.meta.env.VITE_API_URL || `${window.location.origin}/api`;
+
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: `${window.location.protocol}//${window.location.host}/api`,
+  baseURL,
   headers: {
     'Content-Type': 'application/json',
   },
