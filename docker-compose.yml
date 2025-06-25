@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15
+    container_name: bus_database
+    environment:
+      POSTGRES_DB: bus_service
+      POSTGRES_USER: bus_user
+      POSTGRES_PASSWORD: bus_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - bus_network
+
+  # Flask Backend
+  backend:
+    build:
+      context: ./bus-backend
+      dockerfile: Dockerfile
+    container_name: bus_backend
+    environment:
+      - FLASK_APP=src/main.py
+      - FLASK_ENV=development
+      - DATABASE_URL=postgresql://bus_user:bus_password@db:5432/bus_service
+      - SECRET_KEY=your-secret-key-here
+      - JWT_SECRET_KEY=your-jwt-secret-key-here
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    volumes:
+      - ./bus-backend:/app
+    networks:
+      - bus_network
+    command: flask run --host=0.0.0.0 --port=5000
+
+  # Frontend (served by backend)
+  # Note: Frontend is built and served by the Flask backend
+  # No separate frontend service needed
+
+volumes:
+  postgres_data:
+
+networks:
+  bus_network:
+    driver: bridge
+
