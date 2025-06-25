@@ -69,3 +69,5 @@ class Rider(db.Model):
         """Find all active riders"""
         return cls.query.filter_by(status=RiderStatus.ACTIVE).all()
 
+    # Reverse relationship to bookings
+    bookings = db.relationship('Booking', backref='rider', cascade='all, delete-orphan', lazy='select')

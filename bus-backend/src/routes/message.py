@@ -7,8 +7,11 @@ from src.routes.auth import verify_token
 
 message_bp = Blueprint('message', __name__)
 
+from functools import wraps
+
 def require_auth(f):
     """Decorator to require authentication"""
+    @wraps(f)
     def decorated_function(*args, **kwargs):
         auth_header = request.headers.get('Authorization')
         if not auth_header:

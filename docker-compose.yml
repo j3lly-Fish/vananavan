@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: bus_user
       POSTGRES_PASSWORD: bus_password
     ports:
-      - "5432:5432"
+      - "8787:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -30,14 +30,14 @@ services:
       - SECRET_KEY=your-secret-key-here
       - JWT_SECRET_KEY=your-jwt-secret-key-here
     ports:
-      - "5000:5000"
+      - "5050:5050"
     depends_on:
       - db
     volumes:
       - ./bus-backend:/app
     networks:
       - bus_network
-    command: flask run --host=0.0.0.0 --port=5000
+    command: flask run --host=0.0.0.0 --port=5050
 
   # Frontend (served by backend)
   # Note: Frontend is built and served by the Flask backend

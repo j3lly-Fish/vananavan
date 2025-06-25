@@ -4,8 +4,11 @@ from src.routes.auth import verify_token
 
 user_bp = Blueprint('user', __name__)
 
+from functools import wraps
+
 def require_auth(f):
     """Decorator to require authentication"""
+    @wraps(f)
     def decorated_function(*args, **kwargs):
         auth_header = request.headers.get('Authorization')
         if not auth_header:
@@ -93,9 +96,10 @@ def get_users():
 @user_bp.route('/users', methods=['POST'])
 @require_auth
 def create_user():
-    
-    data = request.json
-        user = User(
+    data = request.get_json()
+    if 'email' not in data or not data['email']:
+        return jsonify({'error': 'Email is required'}), 400
+    user = User(
         email=data['email'],
         first_name=data.get('first_name', ''),
         last_name=data.get('last_name', ''),
@@ -115,8 +119,11 @@ def get_user(user_id):
 @require_auth
 def update_user(user_id):
     user = User.query.get_or_404(user_id)
-    data = request.json
-        if 'first_name' in data:
+    data = request.get_json()
+    if 'email' in data and not data['email']:
+        return jsonify({'error': 'Email cannot be empty'}), 400
+    data = request.get_json()
+    if 'first_name' in data:
         user.first_name = data['first_name']
     if 'last_name' in data:
         user.last_name = data['last_name']

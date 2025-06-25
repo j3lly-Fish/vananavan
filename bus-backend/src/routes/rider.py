@@ -1,253 +1,73 @@
-from flask import Blueprint, jsonify, request
-from src.models.user import User, UserRole, db
-from src.models.rider import Rider, RiderStatus
-from src.models.booking import BookingStatus
-from src.routes.auth import verify_token
+from src.models.user import db
 from datetime import datetime
+import enum
 
-rider_bp = Blueprint('rider', __name__)
+class RiderStatus(enum.Enum):
+    ACTIVE = "active"
+    INACTIVE = "inactive"
 
-def require_auth(f):
-    """Decorator to require authentication"""
-    def decorated_function(*args, **kwargs):
-        auth_header = request.headers.get('Authorization')
-        if not auth_header:
-            return jsonify({'error': 'Authorization header required'}), 401
-        
-        try:
-            token = auth_header.split(' ')[1]  # Bearer <token>
-            user_id = verify_token(token)
-            if not user_id:
-                return jsonify({'error': 'Invalid token'}), 401
-            
-            request.current_user_id = user_id
-            return f(*args, **kwargs)
-        except:
-            return jsonify({'error': 'Invalid authorization header'}), 401
+class Rider(db.Model):
+    __tablename__ = 'riders'
     
-    decorated_function.__name__ = f.__name__
-    return decorated_function
+    id = db.Column(db.Integer, primary_key=True)
+    parent_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    student_name = db.Column(db.String(100), nullable=False)
+    school = db.Column(db.String(100), nullable=False)
+    grade = db.Column(db.String(20))
+    date_of_birth = db.Column(db.Date)
+    special_needs = db.Column(db.Text)
+    medical_conditions = db.Column(db.Text)
+    emergency_contact_name = db.Column(db.String(100))
+    emergency_contact_phone = db.Column(db.String(20))
+    emergency_contact_relationship = db.Column(db.String(50))
+    pickup_address = db.Column(db.Text)
+    dropoff_address = db.Column(db.Text)
+    status = db.Column(db.Enum(RiderStatus), nullable=False, default=RiderStatus.ACTIVE)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships
+    bookings = db.relationship('Booking', backref='rider', cascade='all, delete-orphan')
 
-@rider_bp.route('/', methods=['GET'])
-@require_auth
-def get_my_riders():
-    """Get current user's riders (for parents)"""
-    try:
-        user = User.find_by_id(request.current_user_id)
-        if not user:
-            return jsonify({'error': 'User not found'}), 404
-        
-        riders = Rider.find_by_parent(user.id)
-        return jsonify([rider.to_dict() for rider in riders]), 200
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    def __repr__(self):
+        return f'<Rider {self.student_name}>'
 
-@rider_bp.route('/<int:rider_id>', methods=['GET'])
-@require_auth
-def get_rider(rider_id):
-    """Get specific rider by ID"""
-    try:
-        rider = Rider.query.get(rider_id)
-        if not rider:
-            return jsonify({'error': 'Rider not found'}), 404
-        
-        # Check if user has access to this rider
-        user = User.find_by_id(request.current_user_id)
-        if user.role == UserRole.RIDER and rider.parent_user_id != user.id:
-            return jsonify({'error': 'Access denied'}), 403
-        
-        return jsonify(rider.to_dict()), 200
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    def to_dict(self):
+        """Convert rider to dictionary"""
+        return {
+            'id': self.id,
+            'parent_user_id': self.parent_user_id,
+            'student_name': self.student_name,
+            'school': self.school,
+            'grade': self.grade,
+            'date_of_birth': self.date_of_birth.isoformat() if self.date_of_birth else None,
+            'special_needs': self.special_needs,
+            'medical_conditions': self.medical_conditions,
+            'emergency_contact_name': self.emergency_contact_name,
+            'emergency_contact_phone': self.emergency_contact_phone,
+            'emergency_contact_relationship': self.emergency_contact_relationship,
+            'pickup_address': self.pickup_address,
+            'dropoff_address': self.dropoff_address,
+            'status': self.status.value,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+            'parent_user': self.parent_user.to_dict() if self.parent_user else None
+        }
 
-@rider_bp.route('/', methods=['POST'])
-@require_auth
-def create_rider():
-    """Create a new rider profile"""
-    try:
-        user = User.find_by_id(request.current_user_id)
-        if not user:
-            return jsonify({'error': 'User not found'}), 404
-        
-        data = request.get_json()
-        
-        # Validate required fields
-        required_fields = ['student_name', 'school']
-        for field in required_fields:
-            if not data.get(field):
-                return jsonify({'error': f'{field} is required'}), 400
-        
-        # Create new rider
-        rider = Rider(
-            parent_user_id=user.id,
-            student_name=data['student_name'],
-            school=data['school']
-        )
-        
-        # Set optional fields
-        if 'grade' in data:
-            rider.grade = data['grade']
-        
-        if 'date_of_birth' in data:
-            rider.date_of_birth = datetime.strptime(data['date_of_birth'], '%Y-%m-%d').date()
-        
-        if 'special_needs' in data:
-            rider.special_needs = data['special_needs']
-        
-        if 'medical_conditions' in data:
-            rider.medical_conditions = data['medical_conditions']
-        
-        if 'emergency_contact_name' in data:
-            rider.emergency_contact_name = data['emergency_contact_name']
-        
-        if 'emergency_contact_phone' in data:
-            rider.emergency_contact_phone = data['emergency_contact_phone']
-        
-        if 'emergency_contact_relationship' in data:
-            rider.emergency_contact_relationship = data['emergency_contact_relationship']
-        
-        if 'pickup_address' in data:
-            rider.pickup_address = data['pickup_address']
-        
-        if 'dropoff_address' in data:
-            rider.dropoff_address = data['dropoff_address']
-        
-        db.session.add(rider)
-        db.session.commit()
-        
-        return jsonify({
-            'message': 'Rider profile created successfully',
-            'rider': rider.to_dict()
-        }), 201
-        
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+    @classmethod
+    def find_by_parent(cls, parent_user_id):
+        """Find riders by parent user ID"""
+        return cls.query.filter_by(parent_user_id=parent_user_id).all()
 
-@rider_bp.route('/<int:rider_id>', methods=['PUT'])
-@require_auth
-def update_rider(rider_id):
-    """Update a rider profile"""
-    try:
-        rider = Rider.query.get(rider_id)
-        if not rider:
-            return jsonify({'error': 'Rider not found'}), 404
-        
-        # Check if user has access to this rider
-        user = User.find_by_id(request.current_user_id)
-        if user.role == UserRole.RIDER and rider.parent_user_id != user.id:
-            return jsonify({'error': 'Access denied'}), 403
-        
-        data = request.get_json()
-        
-        # Update rider fields
-        if 'student_name' in data:
-            rider.student_name = data['student_name']
-        
-        if 'school' in data:
-            rider.school = data['school']
-        
-        if 'grade' in data:
-            rider.grade = data['grade']
-        
-        if 'date_of_birth' in data:
-            rider.date_of_birth = datetime.strptime(data['date_of_birth'], '%Y-%m-%d').date()
-        
-        if 'special_needs' in data:
-            rider.special_needs = data['special_needs']
-        
-        if 'medical_conditions' in data:
-            rider.medical_conditions = data['medical_conditions']
-        
-        if 'emergency_contact_name' in data:
-            rider.emergency_contact_name = data['emergency_contact_name']
-        
-        if 'emergency_contact_phone' in data:
-            rider.emergency_contact_phone = data['emergency_contact_phone']
-        
-        if 'emergency_contact_relationship' in data:
-            rider.emergency_contact_relationship = data['emergency_contact_relationship']
-        
-        if 'pickup_address' in data:
-            rider.pickup_address = data['pickup_address']
-        
-        if 'dropoff_address' in data:
-            rider.dropoff_address = data['dropoff_address']
-        
-        if 'status' in data:
-            try:
-                rider.status = RiderStatus(data['status'])
-            except ValueError:
-                return jsonify({'error': 'Invalid status'}), 400
-        
-        db.session.commit()
-        
-        return jsonify({
-            'message': 'Rider profile updated successfully',
-            'rider': rider.to_dict()
-        }), 200
-        
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+    @classmethod
+    def find_by_school(cls, school):
+        """Find riders by school"""
+        return cls.query.filter_by(school=school).all()
 
-@rider_bp.route('/<int:rider_id>', methods=['DELETE'])
-@require_auth
-def delete_rider(rider_id):
-    """Delete a rider profile"""
-    try:
-        rider = Rider.query.get(rider_id)
-        if not rider:
-            return jsonify({'error': 'Rider not found'}), 404
-        
-        # Check if user has access to this rider
-        user = User.find_by_id(request.current_user_id)
-        if user.role == UserRole.RIDER and rider.parent_user_id != user.id:
-            return jsonify({'error': 'Access denied'}), 403
-        
-        # Check if rider has active bookings
-        active_bookings = [booking for booking in rider.bookings if booking.status in [BookingStatus.PENDING, BookingStatus.CONFIRMED]]
-        if active_bookings:
-            return jsonify({'error': 'Cannot delete rider with active bookings'}), 400
-        
-        db.session.delete(rider)
-        db.session.commit()
-        
-        return jsonify({'message': 'Rider profile deleted successfully'}), 200
-        
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+    @classmethod
+    def find_active_riders(cls):
+        """Find all active riders"""
+        return cls.query.filter_by(status=RiderStatus.ACTIVE).all()
 
-@rider_bp.route('/school/<school_name>', methods=['GET'])
-def get_riders_by_school(school_name):
-    """Get riders by school (for drivers/admins)"""
-    try:
-        riders = Rider.find_by_school(school_name)
-        return jsonify([rider.to_dict() for rider in riders]), 200
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@rider_bp.route('/<int:rider_id>/bookings', methods=['GET'])
-@require_auth
-def get_rider_bookings(rider_id):
-    """Get bookings for a specific rider"""
-    try:
-        rider = Rider.query.get(rider_id)
-        if not rider:
-            return jsonify({'error': 'Rider not found'}), 404
-        
-        # Check if user has access to this rider
-        user = User.find_by_id(request.current_user_id)
-        if user.role == UserRole.RIDER and rider.parent_user_id != user.id:
-            return jsonify({'error': 'Access denied'}), 403
-        
-        bookings = [booking.to_dict() for booking in rider.bookings]
-        return jsonify(bookings), 200
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
+    # Reverse relationship to bookings
+    bookings = db.relationship('Booking', backref='rider', cascade='all, delete-orphan', lazy='select')

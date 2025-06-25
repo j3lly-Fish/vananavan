@@ -15,12 +15,12 @@ def generate_token(user_id):
         'user_id': user_id,
         'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
     }
-    return jwt.encode(payload, os.environ.get('SECRET_KEY', 'asdf#FGSgvasgf$5$WGT'), algorithm='HS256')
+    return jwt.encode(payload, os.environ.get('JWT_SECRET_KEY', 'asdf#FGSgvasgf$5$WGT'), algorithm='HS256')
 
 def verify_token(token):
     """Verify JWT token and return user ID"""
     try:
-        payload = jwt.decode(token, os.environ.get('SECRET_KEY', 'asdf#FGSgvasgf$5$WGT'), algorithms=['HS256'])
+        payload = jwt.decode(token, os.environ.get('JWT_SECRET_KEY', 'asdf#FGSgvasgf$5$WGT'), algorithms=['HS256'])
         return payload['user_id']
     except jwt.ExpiredSignatureError:
         return None
@@ -115,7 +115,7 @@ def login():
         
         # Check if user is active
         if user.status != UserStatus.ACTIVE:
-            return jsonify({'error': 'Account is not active'}), 401
+            return jsonify({'error': 'Account is not active'}), 403
         
         # Update last login
         user.last_login = datetime.datetime.utcnow()
@@ -195,7 +195,7 @@ def forgot_password():
         
         return jsonify({
             'message': 'If the email exists, a reset link has been sent',
-            'reset_token': reset_token  # In production, this would be sent via email
+            'reset_token': reset_token  # TODO: Send this token via email in production
         }), 200
         
     except Exception as e:

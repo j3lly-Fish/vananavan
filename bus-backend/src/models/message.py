@@ -17,8 +17,8 @@ class Message(db.Model):
     __tablename__ = 'messages'
     
     id = db.Column(db.Integer, primary_key=True)
-    sender_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    recipient_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    sender_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    recipient_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     booking_id = db.Column(db.Integer, db.ForeignKey('bookings.id'))  # Optional, for booking-related messages
     message_type = db.Column(db.Enum(MessageType), nullable=False, default=MessageType.DIRECT)
     subject = db.Column(db.String(200))

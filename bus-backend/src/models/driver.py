@@ -82,3 +82,5 @@ class Driver(db.Model):
         """Find all active drivers"""
         return cls.query.filter_by(status=DriverStatus.ACTIVE).all()
 
+    # Reverse relationship to routes
+    routes = db.relationship('Route', backref='driver', cascade='all, delete-orphan', lazy='select')

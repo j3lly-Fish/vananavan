@@ -10,8 +10,11 @@ from decimal import Decimal
 
 booking_bp = Blueprint('booking', __name__)
 
+from functools import wraps
+
 def require_auth(f):
     """Decorator to require authentication"""
+    @wraps(f)
     def decorated_function(*args, **kwargs):
         auth_header = request.headers.get('Authorization')
         if not auth_header:
