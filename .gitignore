@@ -3,7 +3,7 @@ __pycache__/
 *.py[cod]
 *.db
 instance/
-venv/
+**/venv/
 
 # Node
 node_modules/
