@@ -85,34 +85,50 @@ def update_profile():
         return jsonify({'error': str(e)}), 500
 
 @user_bp.route('/users', methods=['GET'])
+@require_auth
 def get_users():
     users = User.query.all()
     return jsonify([user.to_dict() for user in users])
 
 @user_bp.route('/users', methods=['POST'])
+@require_auth
 def create_user():
     
     data = request.json
-    user = User(username=data['username'], email=data['email'])
+        user = User(
+        email=data['email'],
+        first_name=data.get('first_name', ''),
+        last_name=data.get('last_name', ''),
+        phone=data.get('phone')
+    )
     db.session.add(user)
     db.session.commit()
     return jsonify(user.to_dict()), 201
 
 @user_bp.route('/users/<int:user_id>', methods=['GET'])
+@require_auth
 def get_user(user_id):
     user = User.query.get_or_404(user_id)
     return jsonify(user.to_dict())
 
 @user_bp.route('/users/<int:user_id>', methods=['PUT'])
+@require_auth
 def update_user(user_id):
     user = User.query.get_or_404(user_id)
     data = request.json
-    user.username = data.get('username', user.username)
-    user.email = data.get('email', user.email)
+        if 'first_name' in data:
+        user.first_name = data['first_name']
+    if 'last_name' in data:
+        user.last_name = data['last_name']
+    if 'phone' in data:
+        user.phone = data['phone']
+    if 'email' in data:
+        user.email = data['email']
     db.session.commit()
     return jsonify(user.to_dict())
 
 @user_bp.route('/users/<int:user_id>', methods=['DELETE'])
+@require_auth
 def delete_user(user_id):
     user = User.query.get_or_404(user_id)
     db.session.delete(user)
