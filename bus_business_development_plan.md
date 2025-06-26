@@ -1,7 +1,6 @@
 # Private Bus Business Website Development Plan
 ## Miami-Dade County School Transportation Service
-
-**Prepared by:** Manus AI  
+  
 **Date:** June 25, 2025  
 **Version:** 1.0
 

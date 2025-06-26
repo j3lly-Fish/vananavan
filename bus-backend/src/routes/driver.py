@@ -1,86 +1,226 @@
-from src.models.user import db
+from flask import Blueprint, jsonify, request
+from src.models.user import User, UserRole, db
+from src.models.driver import Driver, DriverStatus
+from src.routes.auth import verify_token
 from datetime import datetime
-import enum
+import json
 
-class DriverStatus(enum.Enum):
-    ACTIVE = "active"
-    INACTIVE = "inactive"
-    SUSPENDED = "suspended"
+driver_bp = Blueprint('driver', __name__)
 
-class Driver(db.Model):
-    __tablename__ = 'drivers'
+from functools import wraps
+
+def require_auth(f):
+    """Decorator to require authentication"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            return jsonify({'error': 'Authorization header required'}), 401
+        
+        try:
+            token = auth_header.split(' ')[1]  # Bearer <token>
+            user_id = verify_token(token)
+            if not user_id:
+                return jsonify({'error': 'Invalid token'}), 401
+            
+            request.current_user_id = user_id
+            return f(*args, **kwargs)
+        except:
+            return jsonify({'error': 'Invalid authorization header'}), 401
     
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique=True)
-    license_number = db.Column(db.String(50), unique=True, nullable=False)
-    license_expiry = db.Column(db.Date, nullable=False)
-    vehicle_make = db.Column(db.String(50))
-    vehicle_model = db.Column(db.String(50))
-    vehicle_year = db.Column(db.Integer)
-    vehicle_capacity = db.Column(db.Integer, nullable=False, default=1)
-    vehicle_plate = db.Column(db.String(20))
-    insurance_policy = db.Column(db.String(100))
-    insurance_expiry = db.Column(db.Date)
-    service_areas = db.Column(db.Text)  # JSON string of service areas
-    bio = db.Column(db.Text)
-    profile_image = db.Column(db.String(255))
-    rating = db.Column(db.Float, default=0.0)
-    total_ratings = db.Column(db.Integer, default=0)
-    status = db.Column(db.Enum(DriverStatus), nullable=False, default=DriverStatus.ACTIVE)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
-    # Relationships
-    routes = db.relationship('Route', backref='driver', cascade='all, delete-orphan')
+    decorated_function.__name__ = f.__name__
+    return decorated_function
 
-    def __repr__(self):
-        return f'<Driver {self.license_number}>'
+@driver_bp.route('/', methods=['GET'])
+def get_drivers():
+    """Get all active drivers"""
+    try:
+        drivers = Driver.find_active_drivers()
+        return jsonify([driver.to_dict() for driver in drivers]), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
-    def to_dict(self):
-        """Convert driver to dictionary"""
-        return {
-            'id': self.id,
-            'user_id': self.user_id,
-            'license_number': self.license_number,
-            'license_expiry': self.license_expiry.isoformat() if self.license_expiry else None,
-            'vehicle_make': self.vehicle_make,
-            'vehicle_model': self.vehicle_model,
-            'vehicle_year': self.vehicle_year,
-            'vehicle_capacity': self.vehicle_capacity,
-            'vehicle_plate': self.vehicle_plate,
-            'insurance_policy': self.insurance_policy,
-            'insurance_expiry': self.insurance_expiry.isoformat() if self.insurance_expiry else None,
-            'service_areas': self.service_areas,
-            'bio': self.bio,
-            'profile_image': self.profile_image,
-            'rating': self.rating,
-            'total_ratings': self.total_ratings,
-            'status': self.status.value,
-            'created_at': self.created_at.isoformat() if self.created_at else None,
-            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
-            'user': self.user.to_dict() if self.user else None
+@driver_bp.route('/<int:driver_id>', methods=['GET'])
+def get_driver(driver_id):
+    """Get specific driver by ID"""
+    try:
+        driver = Driver.query.get(driver_id)
+        if not driver:
+            return jsonify({'error': 'Driver not found'}), 404
+        
+        return jsonify(driver.to_dict()), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@driver_bp.route('/profile', methods=['GET'])
+@require_auth
+def get_driver_profile():
+    """Get current driver's profile"""
+    try:
+        user = User.find_by_id(request.current_user_id)
+        if not user or user.role != UserRole.DRIVER:
+            return jsonify({'error': 'Access denied'}), 403
+        
+        driver = Driver.find_by_user_id(user.id)
+        if not driver:
+            return jsonify({'error': 'Driver profile not found'}), 404
+        
+        return jsonify(driver.to_dict()), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@driver_bp.route('/profile', methods=['PUT'])
+@require_auth
+def update_driver_profile():
+    """Update current driver's profile"""
+    try:
+        user = User.find_by_id(request.current_user_id)
+        if not user or user.role != UserRole.DRIVER:
+            return jsonify({'error': 'Access denied'}), 403
+        
+        driver = Driver.find_by_user_id(user.id)
+        if not driver:
+            return jsonify({'error': 'Driver profile not found'}), 404
+        
+        data = request.get_json()
+        
+        # Update driver fields
+        if 'license_number' in data:
+            driver.license_number = data['license_number']
+        if 'license_expiry' in data:
+            driver.license_expiry = datetime.strptime(data['license_expiry'], '%Y-%m-%d').date()
+        if 'vehicle_make' in data:
+            driver.vehicle_make = data['vehicle_make']
+        if 'vehicle_model' in data:
+            driver.vehicle_model = data['vehicle_model']
+        if 'vehicle_year' in data:
+            driver.vehicle_year = data['vehicle_year']
+        if 'vehicle_capacity' in data:
+            driver.vehicle_capacity = data['vehicle_capacity']
+        if 'vehicle_plate' in data:
+            driver.vehicle_plate = data['vehicle_plate']
+        if 'insurance_policy' in data:
+            driver.insurance_policy = data['insurance_policy']
+        if 'insurance_expiry' in data:
+            driver.insurance_expiry = datetime.strptime(data['insurance_expiry'], '%Y-%m-%d').date()
+        if 'service_areas' in data:
+            driver.service_areas = json.dumps(data['service_areas']) if isinstance(data['service_areas'], list) else data['service_areas']
+        if 'bio' in data:
+            driver.bio = data['bio']
+        if 'profile_image' in data:
+            driver.profile_image = data['profile_image']
+        
+        # Update user fields
+        if 'first_name' in data:
+            user.first_name = data['first_name']
+        if 'last_name' in data:
+            user.last_name = data['last_name']
+        if 'phone' in data:
+            user.phone = data['phone']
+        
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Profile updated successfully',
+            'driver': driver.to_dict()
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+@driver_bp.route('/search', methods=['GET'])
+def search_drivers():
+    """Search drivers based on criteria"""
+    try:
+        service_area = request.args.get('service_area')
+        min_rating = request.args.get('min_rating', type=float)
+        max_capacity = request.args.get('max_capacity', type=int)
+        
+        query = Driver.query.filter_by(status=DriverStatus.ACTIVE)
+        
+        if service_area:
+            query = query.filter(Driver.service_areas.contains(service_area))
+        
+        if min_rating:
+            query = query.filter(Driver.rating >= min_rating)
+        
+        if max_capacity:
+            query = query.filter(Driver.vehicle_capacity <= max_capacity)
+        
+        drivers = query.all()
+        return jsonify([driver.to_dict() for driver in drivers]), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@driver_bp.route('/stats', methods=['GET'])
+@require_auth
+def get_driver_stats():
+    """Get current driver's statistics"""
+    try:
+        user = User.find_by_id(request.current_user_id)
+        if not user or user.role != UserRole.DRIVER:
+            return jsonify({'error': 'Access denied'}), 403
+        
+        driver = Driver.find_by_user_id(user.id)
+        if not driver:
+            return jsonify({'error': 'Driver profile not found'}), 404
+        
+        # Get route count
+        route_count = len(driver.routes)
+        
+        # Get total bookings (through routes)
+        total_bookings = 0
+        active_bookings = 0
+        for route in driver.routes:
+            total_bookings += len(route.bookings)
+            active_bookings += route.current_bookings
+        
+        stats = {
+            'total_routes': route_count,
+            'total_bookings': total_bookings,
+            'active_bookings': active_bookings,
+            'rating': driver.rating,
+            'total_ratings': driver.total_ratings,
+            'vehicle_capacity': driver.vehicle_capacity
         }
+        
+        return jsonify(stats), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
-    def update_rating(self, new_rating):
-        """Update driver rating with new rating"""
-        if self.total_ratings == 0:
-            self.rating = new_rating
-            self.total_ratings = 1
-        else:
-            total_score = self.rating * self.total_ratings
-            total_score += new_rating
-            self.total_ratings += 1
-            self.rating = total_score / self.total_ratings
+@driver_bp.route('/rating', methods=['POST'])
+@require_auth
+def rate_driver():
+    """Rate a driver (for riders/parents)"""
+    try:
+        data = request.get_json()
+        driver_id = data.get('driver_id')
+        rating = data.get('rating')
+        
+        if not driver_id or not rating:
+            return jsonify({'error': 'Driver ID and rating are required'}), 400
+        
+        if not (1 <= rating <= 5):
+            return jsonify({'error': 'Rating must be between 1 and 5'}), 400
+        
+        driver = Driver.query.get(driver_id)
+        if not driver:
+            return jsonify({'error': 'Driver not found'}), 404
+        
+        # Update driver rating
+        driver.update_rating(rating)
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Rating submitted successfully',
+            'new_rating': driver.rating,
+            'total_ratings': driver.total_ratings
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
-    @classmethod
-    def find_by_user_id(cls, user_id):
-        """Find driver by user ID"""
-        return cls.query.filter_by(user_id=user_id).first()
-
-    @classmethod
-    def find_active_drivers(cls):
-        """Find all active drivers"""
-        return cls.query.filter_by(status=DriverStatus.ACTIVE).all()
-
-    # Reverse relationship to routes
-    routes = db.relationship('Route', backref='driver', cascade='all, delete-orphan', lazy='select')
