@@ -66,7 +66,7 @@ const LandingPage = () => {
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-2">
               <Bus className="w-8 h-8 text-blue-600" />
-              <span className="text-2xl font-bold text-gray-900">Miami School Bus</span>
+              <span className="text-2xl font-bold text-gray-900">Vananavan</span>
             </div>
             <div className="flex items-center space-x-4">
               <Link to="/login">
@@ -117,7 +117,7 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Why Choose Miami School Bus?
+              Why Choose Vananavan?
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               We provide a secure, reliable platform connecting families with 
@@ -217,7 +217,7 @@ const LandingPage = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-6 h-6 text-blue-600" />
-                <span className="text-lg text-gray-700">support@miamischoolbus.com</span>
+                <span className="text-lg text-gray-700">support@vananavan.com</span>
               </div>
             </div>
           </div>
@@ -231,7 +231,7 @@ const LandingPage = () => {
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center space-x-2 mb-4">
                 <Bus className="w-8 h-8 text-blue-400" />
-                <span className="text-2xl font-bold">Miami School Bus</span>
+                <span className="text-2xl font-bold">Vananavan</span>
               </div>
               <p className="text-gray-400 mb-4">
                 Connecting families with safe, reliable school transportation 
@@ -261,7 +261,7 @@ const LandingPage = () => {
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 Miami School Bus Service. All rights reserved.</p>
+            <p>&copy; 2025 Vananavan Service. All rights reserved.</p>
           </div>
         </div>
       </footer>
