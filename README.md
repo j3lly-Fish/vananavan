@@ -1,6 +1,6 @@
-# Miami School Bus Service - Local Development Setup
+#Vananavan Service - Local Development Setup
 
-This guide will help you run the Miami School Bus Service application locally using Docker Compose.
+This guide will help you run the Vananavan Service application locally using Docker Compose.
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@ This guide will help you run the Miami School Bus Service application locally us
 1. **Clone or download the project files**
    Make sure you have all the project files in a directory structure like this:
    ```
-   miami-bus-service/
+   vananavan/
    ├── docker-compose.yml
    ├── init.sql
    ├── bus-backend/

@@ -162,7 +162,7 @@ const RegisterPage = () => {
         <div className="text-center">
           <Link to="/" className="flex items-center justify-center space-x-2 mb-6">
             <Bus className="w-8 h-8 text-blue-600" />
-            <span className="text-2xl font-bold text-gray-900">Miami School Bus</span>
+            <span className="text-2xl font-bold text-gray-900">Vananavan</span>
           </Link>
           <h2 className="text-3xl font-bold text-gray-900">
             Create your account
@@ -181,7 +181,7 @@ const RegisterPage = () => {
         {/* Registration Form */}
         <Card>
           <CardHeader>
-            <CardTitle>Join Miami School Bus</CardTitle>
+            <CardTitle>Join Vananavan</CardTitle>
             <CardDescription>
               Fill out the form below to create your account
             </CardDescription>

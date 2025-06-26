@@ -1,4 +1,4 @@
--- Database initialization script for Miami School Bus Service
+-- Database initialization script for Vananavan Service
 -- This script will be run when the PostgreSQL container starts
 
 -- Create the database if it doesn't exist
