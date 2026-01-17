@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+    container_name: vananavan-app
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/vananavan
+      - NEXTAUTH_SECRET=changeme_in_prod_secret_123
+      - NEXTAUTH_URL=http://localhost:3000
+      - AUTH_TRUST_HOST=true
+      - NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+    depends_on:
+      - db
+    networks:
+      - vananavan-network
+    volumes:
+      - ./public/uploads:/app/public/uploads
+
+  db:
+    image: postgis/postgis:15-3.3-alpine
+    container_name: vananavan-db
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=vananavan
+    ports:
+      - "5433:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - vananavan-network
+
+networks:
+  vananavan-network:
+    driver: bridge
+
+volumes:
+  db-data:

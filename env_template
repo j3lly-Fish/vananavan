@@ -1,0 +1,12 @@
+# Database Connection (Local)
+# Used by Drizzle Kit for migrations
+DATABASE_URL=postgres://postgres:postgres@localhost:5433/vananavan
+
+# NextAuth Configuration
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=changeme_secret_key_123
+AUTH_TRUST_HOST=true
+
+# Google Maps API Key
+# REQUIRED: Replace with your actual AIza... key
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY_HERE
