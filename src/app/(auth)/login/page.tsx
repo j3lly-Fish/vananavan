@@ -1,24 +1,34 @@
+'use client';
 
 import Link from "next/link"
 import { login } from "./actions"
+import { useTranslations } from "@/components/providers/language-provider"
 
 export default function LoginPage() {
+    const t = useTranslations('auth');
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        await login(formData);
+    };
+
     return (
-        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="flex min-h-[calc(100vh-5rem)] items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
             <div className="w-full max-w-md space-y-8 bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800">
                 <div className="text-center">
                     <h2 className="mt-6 text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-                        Welcome back
+                        {t('login')}
                     </h2>
                     <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                        Sign in to manage your rides
+                        {t('joinToday')}
                     </p>
                 </div>
-                <form className="mt-8 space-y-6" action={login}>
+                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     <div className="-space-y-px rounded-md shadow-sm">
                         <div>
                             <label htmlFor="email-address" className="sr-only">
-                                Email address
+                                {t('email')}
                             </label>
                             <input
                                 id="email-address"
@@ -26,13 +36,13 @@ export default function LoginPage() {
                                 type="email"
                                 autoComplete="email"
                                 required
-                                className="relative block w-full rounded-t-md border-0 py-3 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 dark:bg-slate-950 dark:text-white dark:ring-slate-700"
-                                placeholder="Email address"
+                                className="relative block w-full rounded-t-md border-0 py-3 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-[#D4A574] sm:text-sm sm:leading-6 dark:bg-slate-950 dark:text-white dark:ring-slate-700"
+                                placeholder={t('email')}
                             />
                         </div>
                         <div>
                             <label htmlFor="password" className="sr-only">
-                                Password
+                                {t('password')}
                             </label>
                             <input
                                 id="password"
@@ -40,8 +50,8 @@ export default function LoginPage() {
                                 type="password"
                                 autoComplete="current-password"
                                 required
-                                className="relative block w-full rounded-b-md border-0 py-3 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 dark:bg-slate-950 dark:text-white dark:ring-slate-700"
-                                placeholder="Password"
+                                className="relative block w-full rounded-b-md border-0 py-3 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-[#D4A574] sm:text-sm sm:leading-6 dark:bg-slate-950 dark:text-white dark:ring-slate-700"
+                                placeholder={t('password')}
                             />
                         </div>
                     </div>
@@ -49,14 +59,14 @@ export default function LoginPage() {
                     <div>
                         <button
                             type="submit"
-                            className="group relative flex w-full justify-center rounded-lg bg-blue-600 px-3 py-3 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all shadow-lg shadow-blue-500/30"
+                            className="group relative flex w-full justify-center rounded-lg bg-[#D4A574] px-3 py-3 text-sm font-semibold text-white hover:bg-[#B89060] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A574] transition-all shadow-lg shadow-[#D4A574]/30"
                         >
-                            Sign in
+                            {t('login')}
                         </button>
                     </div>
                     <div className="text-sm text-center">
-                        <Link href="/register" className="font-medium text-blue-600 hover:text-blue-500">
-                            Don't have an account? Sign up
+                        <Link href="/register" className="font-medium text-[#C85A6E] hover:text-[#B54A5E]">
+                            {t('noAccount')}
                         </Link>
                     </div>
                 </form>
