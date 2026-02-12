@@ -57,7 +57,7 @@ export default async function AdminDashboard() {
                                 <tr key={profile.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
                                     <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">{profile.firstName} {profile.lastName}</td>
                                     <td className="px-6 py-4">
-                                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${profile.role === 'driver' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'}`}>
+                                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${profile.role === 'driver' ? 'bg-[#D4A574]/15 text-[#D4A574] dark:bg-[#D4A574]/25 dark:text-[#D4A574]' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'}`}>
                                             {profile.role}
                                         </span>
                                     </td>
@@ -70,7 +70,7 @@ export default async function AdminDashboard() {
                                     <td className="px-6 py-4">
                                         {profile.role === 'driver' && (
                                             profile.licenseDocumentUrl ? (
-                                                <a href={profile.licenseDocumentUrl} target="_blank" className="text-blue-600 hover:underline">View</a>
+                                                <a href={profile.licenseDocumentUrl} target="_blank" className="text-[#C85A6E] hover:underline">View</a>
                                             ) : <span className="text-slate-400">Missing</span>
                                         )}
                                     </td>

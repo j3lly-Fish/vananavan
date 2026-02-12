@@ -5,14 +5,22 @@ import { PlaceAutocomplete } from '@/components/ui/place-autocomplete';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { findDrivers } from './actions';
-import { Map, AdvancedMarker, useMap } from '@vis.gl/react-google-maps';
+import { DriverProfileDialog } from '@/components/dashboard/driver-profile-dialog';
+import { formatPhoneNumber, formatPhoneLink, isLicenseExpired } from '@/lib/utils';
+import Image from 'next/image';
 
 type DriverMatch = {
     id: string;
     driver_id: string;
     driver_name: string;
     name: string; // Route name
+    phone?: string | null;
     license_document_url?: string | null;
+    profile_image_url?: string | null;
+    vehicle_photo_urls?: string[] | null;
+    chauffeur_license_url?: string | null;
+    chauffeur_license_expires_at?: Date | null;
+    chauffeur_license_verified?: boolean | null;
 };
 
 export default function ParentDashboard() {
@@ -20,6 +28,7 @@ export default function ParentDashboard() {
     const [school, setSchool] = useState<google.maps.places.PlaceResult | null>(null);
     const [matches, setMatches] = useState<DriverMatch[]>([]);
     const [loading, setLoading] = useState(false);
+    const [selectedDriver, setSelectedDriver] = useState<DriverMatch | null>(null);
 
     const handleSearch = async () => {
         if (!home?.geometry?.location || !school?.geometry?.location) {
@@ -56,9 +65,14 @@ export default function ParentDashboard() {
 
     return (
         <div className="space-y-8">
+            <DriverProfileDialog
+                isOpen={!!selectedDriver}
+                onClose={() => setSelectedDriver(null)}
+                driver={selectedDriver}
+            />
             <div>
                 <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Find a Driver</h1>
-                <p className="text-slate-600 dark:text-slate-400 mt-2">Enter your home address and your child's school to find matching routes.</p>
+                <p className="text-slate-600 dark:text-slate-400 mt-2">Enter your home address and your child&apos;s school to find matching routes.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -87,30 +101,108 @@ export default function ParentDashboard() {
                     )}
 
                     <div className="space-y-3">
-                        {matches.map((match) => (
-                            <div key={match.id} className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm hover:border-blue-500 transition-colors flex justify-between items-center">
-                                <div>
-                                    <div className="flex items-center gap-2">
-                                        <h4 className="font-bold text-slate-900 dark:text-white">{match.driver_name}</h4>
-                                        {match.license_document_url && (
+                        {matches.map((match) => {
+                            const chauffeurExpired = match.chauffeur_license_expires_at
+                                ? isLicenseExpired(match.chauffeur_license_expires_at)
+                                : false;
+
+                            return (
+                                <div
+                                    key={match.id}
+                                    onClick={() => setSelectedDriver(match)}
+                                    className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm hover:border-[#D4A574] hover:shadow-md transition-all cursor-pointer group"
+                                >
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div className="flex gap-4">
+                                            <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex-shrink-0 overflow-hidden relative border border-slate-200 dark:border-slate-700">
+                                                {match.profile_image_url ? (
+                                                    <img
+                                                        src={match.profile_image_url}
+                                                        alt={match.driver_name}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-xl">👤</div>
+                                                )}
+                                            </div>
+                                            <div>
+                                                <div className="flex items-center gap-2 flex-wrap">
+                                                    <h4 className="font-bold text-slate-900 dark:text-white">{match.driver_name}</h4>
+                                                    {match.license_document_url && (
+                                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" title="Verified License">
+                                                            ✓ Verified
+                                                        </span>
+                                                    )}
+                                                    {match.chauffeur_license_url && (
+                                                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                                                            chauffeurExpired
+                                                                ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                                                                : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                                                        }`} title={chauffeurExpired ? "Chauffeur License Expired" : "Chauffeur License Verified"}>
+                                                            {chauffeurExpired ? '✗ Chauffeur Expired' : '✓ Chauffeur'}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <p className="text-sm text-slate-500">{match.name}</p>
+                                                {match.phone && (
+                                                    <a
+                                                        href={formatPhoneLink(match.phone)}
+                                                        className="text-sm text-[#C85A6E] hover:underline dark:text-[#C85A6E]"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        {formatPhoneNumber(match.phone)}
+                                                    </a>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <Link href={`/dashboard/messages?partnerId=${match.driver_id}`} onClick={(e) => e.stopPropagation()}>
+                                            <Button size="sm" variant="outline">Message</Button>
+                                        </Link>
+                                    </div>
+
+                                    {match.chauffeur_license_url && (
+                                        <div className="mb-4">
+                                            <p className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Chauffeur License</p>
                                             <a
-                                                href={match.license_document_url}
+                                                href={match.chauffeur_license_url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 hover:underline"
-                                                title="Click to view license"
+                                                className="block w-full max-w-[200px] h-[120px] rounded-md overflow-hidden border-2 border-slate-200 dark:border-slate-700 hover:opacity-80 transition-opacity relative"
+                                                onClick={(e) => e.stopPropagation()}
                                             >
-                                                ✓ Verified License
+                                                <Image
+                                                    src={match.chauffeur_license_url}
+                                                    alt="Chauffeur License"
+                                                    fill
+                                                    className="object-cover"
+                                                    sizes="200px"
+                                                />
                                             </a>
-                                        )}
-                                    </div>
-                                    <p className="text-sm text-slate-500">{match.name}</p>
+                                        </div>
+                                    )}
+
+                                    {match.vehicle_photo_urls && match.vehicle_photo_urls.length > 0 && (
+                                        <div className="mt-4">
+                                            <p className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Vehicle Photos</p>
+                                            <div className="flex gap-2 overflow-x-auto pb-2">
+                                                {match.vehicle_photo_urls.map((url, i) => (
+                                                    <a
+                                                        key={i}
+                                                        href={url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="block w-24 h-16 flex-shrink-0 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 hover:opacity-80 transition-opacity relative"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        <Image src={url} alt={`Vehicle ${i + 1}`} fill className="object-cover" sizes="96px" />
+                                                    </a>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                                <Link href={`/dashboard/messages?partnerId=${match.driver_id}`}>
-                                    <Button size="sm" variant="outline">Message</Button>
-                                </Link>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             </div>

@@ -3,7 +3,11 @@
 import { useState } from 'react';
 import { RouteEditor } from "@/components/dashboard/route-editor";
 import { RouteList } from "@/components/dashboard/route-list";
+import { ProfilePictureManager } from "@/components/dashboard/profile-picture-manager";
+import { VehiclePhotosManager } from "@/components/dashboard/vehicle-photos-manager";
 import { LicenseManager } from "@/components/dashboard/license-manager";
+import { ChauffeurLicenseManager } from "@/components/dashboard/chauffeur-license-manager";
+import { useTranslations } from "@/components/providers/language-provider";
 
 interface Route {
     id: string;
@@ -15,9 +19,23 @@ interface Route {
 interface DriverDashboardClientProps {
     initialRoutes: Route[];
     licenseUrl: string;
+    profileImageUrl: string;
+    vehiclePhotoUrls: string[];
+    chauffeurLicenseUrl: string;
+    chauffeurLicenseExpiresAt: Date | null;
+    chauffeurLicenseVerified: boolean;
 }
 
-export function DriverDashboardClient({ initialRoutes, licenseUrl }: DriverDashboardClientProps) {
+export function DriverDashboardClient({
+    initialRoutes,
+    licenseUrl,
+    profileImageUrl,
+    vehiclePhotoUrls,
+    chauffeurLicenseUrl,
+    chauffeurLicenseExpiresAt,
+    chauffeurLicenseVerified
+}: DriverDashboardClientProps) {
+    const t = useTranslations('dashboard.driver');
     const [selectedRoute, setSelectedRoute] = useState<Route | null>(initialRoutes[0] || null);
 
     // Key to force re-render of editor when selection changes
@@ -28,7 +46,21 @@ export function DriverDashboardClient({ initialRoutes, licenseUrl }: DriverDashb
             {/* Sidebar / List */}
             <div className="lg:col-span-1 space-y-6">
                 <div className="p-6 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
-                    <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-slate-200">Your Routes</h2>
+                    <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-slate-200">{t('profile')}</h2>
+                    <div className="space-y-6">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t('profilePicture')}</label>
+                            <ProfilePictureManager initialUrl={profileImageUrl} />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t('vehiclePhotos')}</label>
+                            <VehiclePhotosManager initialUrls={vehiclePhotoUrls} />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="p-6 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+                    <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-slate-200">{t('routes')}</h2>
                     <RouteList
                         routes={initialRoutes}
                         onEdit={setSelectedRoute}
@@ -37,8 +69,21 @@ export function DriverDashboardClient({ initialRoutes, licenseUrl }: DriverDashb
                 </div>
 
                 <div className="p-6 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
-                    <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-slate-200">Documents</h2>
-                    <LicenseManager initialUrl={licenseUrl} />
+                    <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-slate-200">{t('documents')}</h2>
+                    <div className="space-y-6">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t('driversLicense')}</label>
+                            <LicenseManager initialUrl={licenseUrl} />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t('chauffeurLicense')}</label>
+                            <ChauffeurLicenseManager
+                                initialUrl={chauffeurLicenseUrl}
+                                initialExpiresAt={chauffeurLicenseExpiresAt}
+                                initialVerified={chauffeurLicenseVerified}
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -46,7 +91,7 @@ export function DriverDashboardClient({ initialRoutes, licenseUrl }: DriverDashb
             <div className="lg:col-span-2">
                 <div className="p-6 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 h-full">
                     <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-slate-200">
-                        {selectedRoute ? 'Edit Route' : 'Create New Route'}
+                        {selectedRoute ? t('editRoute') : t('createRoute')}
                     </h2>
                     <p className="text-sm text-slate-500 mb-6">
                         {selectedRoute

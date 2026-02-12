@@ -4,7 +4,7 @@ import { signIn } from '@/auth'
 import { db } from '@/db'
 import { users, profiles } from '@/db/schema'
 import { hash } from 'bcryptjs'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { AuthError } from 'next-auth'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
@@ -39,11 +39,16 @@ export async function signup(formData: FormData) {
     const password = formData.get('password') as string
     const firstName = formData.get('firstName') as string
     const lastName = formData.get('lastName') as string
+    const tosAccepted = formData.get('tosAccepted') === 'true'
     // Default to parent if not specified, though form should provide it
     const role = (formData.get('role') as 'driver' | 'parent') || 'parent'
 
     if (!email || !password || !firstName || !lastName) {
         redirect('/register?error=Missing fields')
+    }
+
+    if (!tosAccepted) {
+        redirect('/register?error=You must accept the Terms of Service')
     }
 
     // Check if user exists
@@ -55,15 +60,16 @@ export async function signup(formData: FormData) {
     const hashedPassword = await hash(password, 10)
 
     try {
-        // Transactional insert would be ideal but Drizzle-Postgres-JS transaction support 
+        // Transactional insert would be ideal but Drizzle-Postgres-JS transaction support
         // depends on the driver setup. We'll do sequential for now.
 
-        // 1. Create User
+        // 1. Create User with TOS accepted
         const [newUser] = await db.insert(users).values({
             email,
             password: hashedPassword,
             name: `${firstName} ${lastName}`,
             role: role,
+            tosAccepted: true,
         }).returning()
 
         // 2. Create Profile

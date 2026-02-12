@@ -18,6 +18,11 @@ export function LicenseManager({ initialUrl }: LicenseManagerProps) {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        if (file.size > 100 * 1024 * 1024) {
+            toast.error("File size must be less than 100MB");
+            return;
+        }
+
         setIsUploading(true);
         try {
             const formData = new FormData();
@@ -73,13 +78,13 @@ export function LicenseManager({ initialUrl }: LicenseManagerProps) {
                         disabled={isUploading}
                     />
                     <div className="space-y-2">
-                        <div className="mx-auto w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                        <div className="mx-auto w-12 h-12 bg-[#D4A574]/10 dark:bg-[#D4A574]/20 rounded-full flex items-center justify-center">
                             <span className="text-2xl">📄</span>
                         </div>
                         <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
                             {isUploading ? 'Uploading...' : 'Click or Drag file to upload'}
                         </div>
-                        <p className="text-xs text-slate-500">PDF, JPG, PNG up to 5MB</p>
+                        <p className="text-xs text-slate-500">PDF, JPG, PNG up to 100MB</p>
                     </div>
                 </div>
 
@@ -103,9 +108,9 @@ export function LicenseManager({ initialUrl }: LicenseManagerProps) {
                 </div>
             </div>
             {url && (
-                <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
-                    <p className="text-xs font-semibold text-blue-800 dark:text-blue-300 mb-1">Current Document:</p>
-                    <a href={url} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline break-all">
+                <div className="mt-2 p-3 bg-[#D4A574]/10 dark:bg-[#D4A574]/20 rounded-lg border border-[#D4A574]/20 dark:border-[#D4A574]/30">
+                    <p className="text-xs font-semibold text-[#D4A574] dark:text-[#D4A574] mb-1">Current Document:</p>
+                    <a href={url} target="_blank" rel="noopener noreferrer" className="text-sm text-[#D4A574] hover:underline break-all">
                         {url}
                     </a>
                 </div>

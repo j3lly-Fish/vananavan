@@ -63,14 +63,14 @@ export function RouteList({ routes, onEdit, onNew }: RouteListProps) {
                         <div
                             key={route.id}
                             onClick={() => onEdit(route)}
-                            className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 hover:border-blue-500 cursor-pointer transition-all bg-white dark:bg-slate-950 flex justify-between items-center group"
+                            className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 hover:border-[#D4A574] cursor-pointer transition-all bg-white dark:bg-slate-950 flex justify-between items-center group"
                         >
                             <div>
                                 <h3 className="font-semibold text-slate-900 dark:text-white">{route.name || 'Untitled Route'}</h3>
                                 <p className="text-xs text-slate-500">Created {formatDistanceToNow(new Date(route.createdAt), { addSuffix: true })}</p>
                             </div>
                             <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Button size="sm" variant="ghost" className="text-blue-600">Edit</Button>
+                                <Button size="sm" variant="ghost" className="text-[#D4A574]">Edit</Button>
                                 <Button
                                     size="sm"
                                     variant="destructive"

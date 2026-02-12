@@ -82,7 +82,7 @@ export default function MessagesPage() {
                             <div
                                 key={c.partner_id}
                                 onClick={() => handleSelect(c.partner_id)}
-                                className={`p-4 border-b border-slate-100 dark:border-slate-800 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${selectedPartnerId === c.partner_id ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+                                className={`p-4 border-b border-slate-100 dark:border-slate-800 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${selectedPartnerId === c.partner_id ? 'bg-[#D4A574]/10 dark:bg-[#D4A574]/20' : ''}`}
                             >
                                 <div className="flex justify-between mb-1">
                                     <span className="font-semibold text-slate-900 dark:text-white">{c.partner_name}</span>

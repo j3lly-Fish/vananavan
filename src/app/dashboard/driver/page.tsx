@@ -1,9 +1,9 @@
 import { DriverDashboardClient } from "./client-page";
-import { getDriverRoutes, getLicenseUrl } from "./actions";
+import { getDriverRoutes, getDriverProfile } from "./actions";
 
 export default async function DriverDashboard() {
     const routes = await getDriverRoutes();
-    const licenseUrl = await getLicenseUrl();
+    const profile = await getDriverProfile();
 
     return (
         <div className="space-y-6">
@@ -13,7 +13,12 @@ export default async function DriverDashboard() {
 
             <DriverDashboardClient
                 initialRoutes={routes}
-                licenseUrl={licenseUrl || ''}
+                licenseUrl={profile?.licenseDocumentUrl || ''}
+                profileImageUrl={profile?.profileImageUrl || ''}
+                vehiclePhotoUrls={profile?.vehiclePhotoUrls || []}
+                chauffeurLicenseUrl={profile?.chauffeurLicenseUrl || ''}
+                chauffeurLicenseExpiresAt={profile?.chauffeurLicenseExpiresAt || null}
+                chauffeurLicenseVerified={profile?.chauffeurLicenseVerified || false}
             />
         </div>
     )

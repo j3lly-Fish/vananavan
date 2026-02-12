@@ -9,18 +9,23 @@ export async function findDrivers({ homeLat, homeLng, schoolLat, schoolLng }: { 
 
         // Raw SQL query equivalent to the 'match_routes' RPC
         const result = await db.execute(sql`
-            SELECT 
+            SELECT
                 r.id,
                 r.driver_id,
                 r.name,
                 ST_AsText(r.path) as path,
                 p.first_name || ' ' || p.last_name as driver_name,
-                p.first_name || ' ' || p.last_name as driver_name,
                 p.email as driver_email,
-                p.license_document_url
+                p.phone,
+                p.license_document_url,
+                p.profile_image_url,
+                p.vehicle_photo_urls,
+                p.chauffeur_license_url,
+                p.chauffeur_license_expires_at,
+                p.chauffeur_license_verified
             FROM routes r
             JOIN profiles p ON r.driver_id = p.id
-            WHERE 
+            WHERE
                 ST_DWithin(r.path, ST_SetSRID(ST_MakePoint(${homeLng}, ${homeLat}), 4326), ${distanceMeters})
                 AND
                 ST_DWithin(r.path, ST_SetSRID(ST_MakePoint(${schoolLng}, ${schoolLat}), 4326), ${distanceMeters})

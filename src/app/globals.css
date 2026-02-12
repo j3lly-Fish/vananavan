@@ -3,6 +3,27 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Golden Color Scale - Base: #D4A574 (500) */
+  --color-golden-50: #FAF6F0;
+  --color-golden-100: #F3EBE0;
+  --color-golden-200: #E9D9C4;
+  --color-golden-300: #DEC4A3;
+  --color-golden-400: #D9B88C;
+  --color-golden-500: #D4A574;
+  --color-golden-600: #C89460;
+  --color-golden-700: #B89060;
+  --color-golden-800: #9A7650;
+  --color-golden-900: #7A5E40;
+  --color-golden-950: #5A4630;
+
+  /* Accent Colors */
+  --color-charcoal: #3A3A3C;
+  --color-accent-pink: #C85A6E;
+
+  /* Derived Hover Shades */
+  --color-golden-hover: #B89060;
+  --color-pink-hover: #B54A5E;
 }
 
 @theme inline {

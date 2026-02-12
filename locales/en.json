@@ -1,0 +1,108 @@
+{
+  "common": {
+    "appName": "VanaNavan",
+    "loading": "Loading...",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "close": "Close",
+    "delete": "Delete",
+    "edit": "Edit",
+    "upload": "Upload",
+    "uploading": "Uploading...",
+    "search": "Search",
+    "searching": "Searching..."
+  },
+  "auth": {
+    "login": "Sign in",
+    "signup": "Sign up",
+    "logout": "Logout",
+    "email": "Email address",
+    "password": "Password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "createAccount": "Create an account",
+    "alreadyHaveAccount": "Already have an account? Sign in",
+    "noAccount": "Don't have an account? Sign up",
+    "joinToday": "Join VanaNavan today"
+  },
+  "dashboard": {
+    "driver": {
+      "title": "Driver Dashboard",
+      "profile": "Driver Profile",
+      "routes": "Your Routes",
+      "documents": "Documents",
+      "editRoute": "Edit Route",
+      "createRoute": "Create New Route",
+      "profilePicture": "Profile Picture",
+      "vehiclePhotos": "Vehicle Photos",
+      "driversLicense": "Driver's License",
+      "chauffeurLicense": "Miami-Dade Chauffeur's License"
+    },
+    "parent": {
+      "title": "Find a Driver",
+      "subtitle": "Enter your home address and your child's school to find matching routes",
+      "homeAddress": "Home Address",
+      "schoolAddress": "School Address",
+      "searchDrivers": "Search Drivers",
+      "matches": "Matches",
+      "noMatches": "No matches yet. Try searching!",
+      "message": "Message",
+      "verified": "Verified",
+      "chauffeurExpired": "Chauffeur Expired",
+      "chauffeur": "Chauffeur"
+    }
+  },
+  "profile": {
+    "phone": "Phone",
+    "viewLicense": "View License",
+    "viewChauffeurLicense": "View Chauffeur License",
+    "vehiclePhotos": "Vehicle Photos",
+    "noVehiclePhotos": "No vehicle photos available",
+    "route": "Route",
+    "sendMessage": "Send Message"
+  },
+  "upload": {
+    "clickOrDrag": "Click or Drag file to upload",
+    "clickOrDragLicense": "Click or Drag to upload Chauffeur License",
+    "fileSizeLimit": "PDF, JPG, PNG up to 100MB",
+    "orEnterUrl": "OR ENTER URL",
+    "currentDocument": "Current Document",
+    "currentLicense": "Current License",
+    "expirationDate": "Expiration Date",
+    "expires": "Expires",
+    "expired": "Expired",
+    "verified": "Verified",
+    "uploadSuccess": "Document uploaded and saved!",
+    "uploadError": "Upload error",
+    "fileTooLarge": "File size must be less than 100MB"
+  },
+  "tos": {
+    "title": "Terms of Service",
+    "accept": "I agree to the Terms of Service",
+    "mustAccept": "Please accept the Terms of Service to continue",
+    "userResponsibilities": "User Responsibilities",
+    "platformUsage": "Platform Usage",
+    "safetyGuidelines": "Safety Guidelines",
+    "privacy": "Privacy"
+  },
+  "language": {
+    "english": "English",
+    "spanish": "Spanish",
+    "select": "Select Language"
+  },
+  "errors": {
+    "missingFields": "Missing required fields",
+    "uploadFailed": "Upload failed",
+    "saveFailed": "Failed to save",
+    "searchFailed": "Search failed",
+    "unauthorized": "Unauthorized",
+    "somethingWrong": "Something went wrong"
+  },
+  "messages": {
+    "noDriversFound": "No drivers found matching this route",
+    "driversFound": "Found {count} driver(s)!",
+    "accountCreated": "Account created. Please log in.",
+    "selectBothAddresses": "Please select both Home and School addresses"
+  }
+}

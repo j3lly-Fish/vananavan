@@ -1,0 +1,108 @@
+{
+  "common": {
+    "appName": "VanaNavan",
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "upload": "Subir",
+    "uploading": "Subiendo...",
+    "search": "Buscar",
+    "searching": "Buscando..."
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "signup": "Registrarse",
+    "logout": "Cerrar sesión",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "createAccount": "Crear una cuenta",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta? Inicia sesión",
+    "noAccount": "¿No tienes una cuenta? Regístrate",
+    "joinToday": "Únete a VanaNavan hoy"
+  },
+  "dashboard": {
+    "driver": {
+      "title": "Panel del Conductor",
+      "profile": "Perfil del Conductor",
+      "routes": "Tus Rutas",
+      "documents": "Documentos",
+      "editRoute": "Editar Ruta",
+      "createRoute": "Crear Nueva Ruta",
+      "profilePicture": "Foto de Perfil",
+      "vehiclePhotos": "Fotos del Vehículo",
+      "driversLicense": "Licencia de Conducir",
+      "chauffeurLicense": "Licencia de Chofer de Miami-Dade"
+    },
+    "parent": {
+      "title": "Encontrar un Conductor",
+      "subtitle": "Ingresa tu dirección de casa y la escuela de tu hijo para encontrar rutas coincidentes",
+      "homeAddress": "Dirección de Casa",
+      "schoolAddress": "Dirección de la Escuela",
+      "searchDrivers": "Buscar Conductores",
+      "matches": "Coincidencias",
+      "noMatches": "No hay coincidencias aún. ¡Intenta buscar!",
+      "message": "Mensaje",
+      "verified": "Verificado",
+      "chauffeurExpired": "Chofer Vencido",
+      "chauffeur": "Chofer"
+    }
+  },
+  "profile": {
+    "phone": "Teléfono",
+    "viewLicense": "Ver Licencia",
+    "viewChauffeurLicense": "Ver Licencia de Chofer",
+    "vehiclePhotos": "Fotos del Vehículo",
+    "noVehiclePhotos": "No hay fotos del vehículo disponibles",
+    "route": "Ruta",
+    "sendMessage": "Enviar Mensaje"
+  },
+  "upload": {
+    "clickOrDrag": "Haz clic o arrastra el archivo para subir",
+    "clickOrDragLicense": "Haz clic o arrastra para subir la Licencia de Chofer",
+    "fileSizeLimit": "PDF, JPG, PNG hasta 100MB",
+    "orEnterUrl": "O INGRESA URL",
+    "currentDocument": "Documento Actual",
+    "currentLicense": "Licencia Actual",
+    "expirationDate": "Fecha de Vencimiento",
+    "expires": "Vence",
+    "expired": "Vencida",
+    "verified": "Verificada",
+    "uploadSuccess": "¡Documento subido y guardado!",
+    "uploadError": "Error al subir",
+    "fileTooLarge": "El tamaño del archivo debe ser menor a 100MB"
+  },
+  "tos": {
+    "title": "Términos de Servicio",
+    "accept": "Acepto los Términos de Servicio",
+    "mustAccept": "Por favor acepta los Términos de Servicio para continuar",
+    "userResponsibilities": "Responsabilidades del Usuario",
+    "platformUsage": "Uso de la Plataforma",
+    "safetyGuidelines": "Pautas de Seguridad",
+    "privacy": "Privacidad"
+  },
+  "language": {
+    "english": "Inglés",
+    "spanish": "Español",
+    "select": "Seleccionar Idioma"
+  },
+  "errors": {
+    "missingFields": "Faltan campos requeridos",
+    "uploadFailed": "Error al subir",
+    "saveFailed": "Error al guardar",
+    "searchFailed": "Error en la búsqueda",
+    "unauthorized": "No autorizado",
+    "somethingWrong": "Algo salió mal"
+  },
+  "messages": {
+    "noDriversFound": "No se encontraron conductores que coincidan con esta ruta",
+    "driversFound": "¡Se encontraron {count} conductor(es)!",
+    "accountCreated": "Cuenta creada. Por favor inicia sesión.",
+    "selectBothAddresses": "Por favor selecciona tanto la dirección de casa como la de la escuela"
+  }
+}

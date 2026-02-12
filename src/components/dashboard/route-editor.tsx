@@ -70,7 +70,7 @@ export function RouteEditor({ initialRoute, initialName, routeId, onSave }: Rout
                 path: coords,
                 editable: true,
                 draggable: true,
-                strokeColor: '#2563eb',
+                strokeColor: '#D4A574',
                 strokeWeight: 5,
                 map: map
             });
@@ -102,7 +102,7 @@ export function RouteEditor({ initialRoute, initialName, routeId, onSave }: Rout
             polylineOptions: {
                 editable: true,
                 draggable: true,
-                strokeColor: '#2563eb', // blue-600
+                strokeColor: '#D4A574',
                 strokeWeight: 5,
             },
         });

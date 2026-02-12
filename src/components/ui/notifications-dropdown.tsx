@@ -60,7 +60,7 @@ export function NotificationsDropdown() {
                         <div className="text-xs text-slate-500 mt-0.5">Student nearby matches your Morning Route</div>
                     </Link>
 
-                    <button className="w-full text-center py-2 text-xs text-blue-600 hover:text-blue-700 font-medium">
+                    <button className="w-full text-center py-2 text-xs text-[#C85A6E] hover:text-[#B54A5E] font-medium">
                         Mark all as read
                     </button>
                 </div>

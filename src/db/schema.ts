@@ -11,6 +11,7 @@ export const users = pgTable('users', {
     emailVerified: timestamp('emailVerified', { mode: 'date' }),
     image: text('image'),
     role: userRoleEnum('role').default('parent').notNull(),
+    tosAccepted: boolean('tos_accepted').default(false),
     createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
@@ -23,6 +24,13 @@ export const profiles = pgTable('profiles', {
     phone: text('phone'),
     isActive: boolean('is_active').default(true),
     licenseDocumentUrl: text('license_document_url'),
+    profileImageUrl: text('profile_image_url'),
+    vehiclePhotoUrls: jsonb('vehicle_photo_urls').$type<string[]>(),
+    chauffeurLicenseUrl: text('chauffeur_license_url'),
+    chauffeurLicenseUploadedAt: timestamp('chauffeur_license_uploaded_at', { mode: 'date' }),
+    chauffeurLicenseExpiresAt: timestamp('chauffeur_license_expires_at', { mode: 'date' }),
+    chauffeurLicenseVerified: boolean('chauffeur_license_verified').default(false),
+    languagePreference: text('language_preference').default('en'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
@@ -49,5 +57,6 @@ export const messages = pgTable('messages', {
     recipientId: uuid('recipient_id').references(() => profiles.id).notNull(),
     content: text('content').notNull(),
     isRead: boolean('is_read').default(false),
+    originalLanguage: text('original_language'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
 });
